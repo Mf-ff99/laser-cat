@@ -1,0 +1,10 @@
+.joystick-container {
+    border: solid 1px #000;
+    display: inline-block;
+}
+.joystick {
+    width: 100px;
+    height: 100px;
+    margin: 1px;
+    cursor: crosshair;
+}
