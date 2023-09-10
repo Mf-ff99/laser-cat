@@ -14,19 +14,17 @@ app = Flask(__name__)
 def home():
     return render_template('gui.html')
 
-@app.route('/api/int:<x>/int:<y>')
+@app.route('/api/<int(signed=True):x>/<int(signed=True):y>', methods=['GET'])
 def api(x, y):
-    panAngle = y * 100
-    print(y * 100, x * 100)
-    tiltAngle = x * 100
+    tiltAngle = y
+    print(x, y, 'x, y')
+    panAngle = x
 
     if x > 0 or x < 0:
         pantilthat.pan(panAngle)
-        return "{{'pan':{}}}".format(panAngle)
 
-    elif y < 0 or y > 0:
+    if y < 0 or y > 0:
         pantilthat.tilt(tiltAngle)
-        return "{{'tilt':{}}}".format(tiltAngle)
 
     return "{'error':'invalid direction'}"
 

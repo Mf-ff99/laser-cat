@@ -114,22 +114,29 @@ class JoystickController
 }
 
 let myStick = new JoystickController("stick", 64, 8);
+function postXY(x, y) {
+    console.log(x, y, 'x, y')  
+    if (x != 0 || y != 0) {
+	 let xRound = Math.round(x * 100)
+	 let yRound = Math.round(y * 100) 
+	 $.get('/api/' + xRound + '/' + yRound)
+    }
+}
+
+
 function update()
 {
   document.getElementById("status").innerText = "Joystick1: " + JSON.stringify(myStick.value);
 }
 function loop()
 {
-  let { x, y } = myStick.value
-  console.log(x, y) 
-  requestAnimationFrame(loop);
+  let { x, y } = myStick.value;
+  console.log(x, y);
   update();
-  $.get('/api/' + x + '/' + y)  
-       setTimeout(() => {
-            console.log("Delayed for 60ms");
-       }, 100);
+  postXY(x, y)
 }
-loop();
+
+setInterval(loop, 120);
         </script>
     </body>
 </html>
