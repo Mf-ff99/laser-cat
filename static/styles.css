@@ -1,10 +1,67 @@
-.joystick-container {
-    border: solid 1px #000;
-    display: inline-block;
+ 
+@media (max-width: 600px){
+   .container {
+	margin-top: 200px;
+        height: 450px;
+	width: 450px;
+    }
 }
-.joystick {
-    width: 100px;
-    height: 100px;
-    margin: 1px;
-    cursor: crosshair;
+
+@media (min-width: 602px){
+    .container {
+	width: 420px;
+	height: 420px;
+    }
 }
+
+.stick-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    position: relative;
+    margin: 0 auto; /* Center horizontally */
+    margin-top: 15%; /* Adjust the vertical position as needed */
+    border: 1px solid red;
+    border-radius: 50%;
+}
+
+body {
+    top: 0 !important;
+    margin: 0px !important;
+}
+
+body .navbar {
+    background-color: #E9F1F7;
+    top: 0;
+    padding-top: 10px;
+    border-bottom: 1px solid #131B23;
+    padding-left: 10%;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.container img {
+    width: 200px;
+    height: 150px;
+    background-color: #f0f0f0;
+    text-align: center;
+    padding: 20px;
+    margin: 10px;
+    display: none;
+}
+
+#stick {
+    position: absolute;
+    top: 50%; /* Center vertically within the base */
+    left: 50%; /* Center horizontally within the base */
+    width: 30px; /* Adjust the size as needed */
+    height: 30px; /* Adjust the size as needed */
+    background-color: #ff0000; /* Handle color */
+    border-radius: 50%; /* Makes it a circle */
+    transform: translate(-50%, -50%);
+}
+

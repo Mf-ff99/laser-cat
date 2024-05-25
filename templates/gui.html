@@ -8,16 +8,14 @@
         </style>
     </head>
     <body>
-        <h1>PAN ME, TILT ME</h1>
+        <div class="navbar">PAN ME, TILT ME</div>
 
-        <div style="width: 128px">
-  			<img src="images/joystick-base.png"/>
-  			<div id="stick" style="position: absolute; left:32px; top:32px;">
- 			<img src="images/joystick-red.png"/>    
-  		</div>
-		<div id="status">
-  		 Joystick
-		</div>
+        <div class="stick-container">
+		<div class="container">
+  			<div id="stick">
+  		</div>	
+	</div>
+	 	<div id="status">joystick: </div>
 	</div>
 
         <script
@@ -78,8 +76,9 @@ class JoystickController
         const yDiff = event.clientY - self.dragStart.y;
         const angle = Math.atan2(yDiff, xDiff);
       const distance = Math.min(maxDistance, Math.hypot(xDiff, yDiff));
-      const xPosition = distance * Math.cos(angle);
-      const yPosition = distance * Math.sin(angle);
+      const xPosition = (distance * Math.cos(angle)) - 15;
+      const yPosition = (distance * Math.sin(angle)) - 15;
+
       // move stick image to new position
         stick.style.transform = `translate3d(${xPosition}px, ${yPosition}px, 0px)`;
       // deadzone adjustment
@@ -98,7 +97,7 @@ class JoystickController
         if (event.changedTouches && self.touchId != event.changedTouches[0].identifier) return;
         // transition the joystick position back to center
         stick.style.transition = '.2s';
-        stick.style.transform = `translate3d(0px, 0px, 0px)`;
+        stick.style.transform = `translate(-50%, -50%)`;
         // reset everything
         self.value = { x: 0, y: 0 };
         self.touchId = null;
@@ -113,7 +112,16 @@ class JoystickController
   }
 }
 
-let myStick = new JoystickController("stick", 64, 8);
+// get window width for stick resolution
+var width;
+if (window.innerWidth > 600) {
+     width = 175;
+} else {
+     width = 220;
+    }
+
+
+let myStick = new JoystickController("stick", width, 8);
 function postXY(x, y) {
     console.log(x, y, 'x, y')  
     if (x != 0 || y != 0) {
@@ -133,10 +141,12 @@ function loop()
   let { x, y } = myStick.value;
   console.log(x, y);
   update();
-  postXY(x, y)
+  if (x != 0 && y != 0) {
+       postXY(x, y)
+     }
 }
 
-setInterval(loop, 120);
+setInterval(loop, 100);
         </script>
     </body>
 </html>
