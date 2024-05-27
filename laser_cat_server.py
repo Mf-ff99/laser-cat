@@ -1,12 +1,13 @@
+  GNU nano 5.4                                                                                laser_cat_server.py
 #!/usr/bin/env python
 import time
 import pantilthat
 from sys import exit
 import threading
 
-# Constants for smoothing
-alpha = 0.13  # tune smoothness with this
-deadzone = 3
+alpha = 0.10  # tune smoothness with this
+deadzone = 2
+sensitivity = 0.1  # joystick sensitivity
 
 current_pan_angle = 0
 current_tilt_angle = 0
@@ -23,11 +24,10 @@ app = Flask(__name__)
 def update_servos():
     global current_pan_angle, current_tilt_angle
     while True:
-        # Apply smooth movement towards the target angles
+
         new_pan_angle = smooth_move(target_pan_angle, current_pan_angle)
         new_tilt_angle = smooth_move(target_tilt_angle, current_tilt_angle)
 
-        # Update the servo positions if there's any change
         if new_pan_angle != current_pan_angle:
             pantilthat.pan(int(new_pan_angle))
             current_pan_angle = new_pan_angle
@@ -35,24 +35,27 @@ def update_servos():
         if new_tilt_angle != current_tilt_angle:
             pantilthat.tilt(int(new_tilt_angle))
             current_tilt_angle = new_tilt_angle
-
-        # Sleep briefly to avoid overloading the CPU and servos
-        time.sleep(0.05)
+       # adjust refresh rate
+        time.sleep(0.01)
 
 def smooth_move(target, current):
     if abs(target - current) > deadzone:
-        # Apply exponential smoothing
+        # exponential smoothing
         return current + alpha * (target - current)
     else:
         return current
 
-def set_new_target(pan, tilt):
+def set_new_target(pan_delta, tilt_delta):
     global target_pan_angle, target_tilt_angle
-    target_pan_angle = pan
-    target_tilt_angle = tilt
+    target_pan_angle += pan_delta
+    target_tilt_angle += tilt_delta
+
+    # constraints to pan and tilt angles
+    target_pan_angle = min(90, max(-90, target_pan_angle))
+    target_tilt_angle = min(90, max(-90, target_tilt_angle))
 
 servo_thread = threading.Thread(target=update_servos)
-servo_thread.daemon = True  # Allows the thread to exit when the main program does
+servo_thread.daemon = True
 servo_thread.start()
 
 @app.route('/')
@@ -68,12 +71,12 @@ def api(x, y):
     def invert_integer(n):
         return -n
 
-    # Apply constraints to pan and tilt angles
-    panAngle = 90 if x > 90 else (-90 if x < -90 else x)
-    tiltAngle = 90 if y > 90 else (-90 if y < -90 else y)
+    # deltas based on joystick inputs
+    pan_delta = x * sensitivity
+    tilt_delta = y * sensitivity
 
-    # Smoothly update the pan angle
-    set_new_target(invert_integer(panAngle), tiltAngle)
+    # update pan and tilt angle setpoints
+    set_new_target(invert_integer(pan_delta), invert_integer(tilt_delta))
 
     return "{'error':'invalid direction'}"
 
